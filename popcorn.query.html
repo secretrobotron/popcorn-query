@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="http://popcornjs.org/code/dist/popcorn-complete.min.js"></script>
+    <script type="text/javascript" src="popcorn.query.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function(e){
+        var outputDiv = document.querySelector('.output');
+        var setupPre = document.querySelector('.setup-code');
+
+        var setupFunction = new Function(setupPre.innerText + ' return [p, q];');
+
+        var pAndQ = setupFunction();
+        var p = pAndQ[0];
+        var q = pAndQ[1];
+
+        var runButtons = document.querySelectorAll('button.run');
+        Array.prototype.forEach.call(runButtons, function(runButton){
+          var code = runButton.parentNode.querySelector('pre').innerText;
+          var fn = new Function('q', 'return' + code);
+
+          runButton.addEventListener('click', function(e){
+            outputDiv.querySelector('pre').innerText = fn(q);
+          }, false);
+        });
+
+      }, false);
+    </script>
+    <style>
+      html {
+        font-family: helvetica;
+      }
+
+      .code-sample {
+        border: 1px solid #000;
+        padding: 5px;
+      }
+
+      .code-samples {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <video controls>
+      <source src="http://videos.mozilla.org/serv/webmademovies/wtfpopcorn.webm" type="video/webm"></source>
+    </video>
+    <div class="code-samples">
+      <div class="code-sample">
+        <pre>
+          q.find('foo');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.find('bar');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.find('foobar');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.seekTo('bar');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.seekTo('blah');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.fromQueryString('popcorn');
+        </pre>
+        <button class="run">Run</button>
+      </div>
+      <div class="code-sample">
+        <pre>
+          q.seekTo(q.fromQueryString('popcorn'));
+        </pre>
+        <button class="run">Run</button>
+      </div>
+    </div>
+    <h2>Setup:</h2>
+    <pre class="setup-code">
+  var p = Popcorn(document.querySelector('video'));
+  p.text({start: 1, end: 2, text: 'foo'});
+  p.text({start: 3, end: 4, text: 'foobar'});
+  p.text({start: 6, end: 9, text: 'bar blah'});
+
+  var q = Popcorn.query(p);
+    </pre>
+    <div class="output">
+      <h2>Results:</h2>
+      <pre></pre>
+    </div>
+  </body>
+</html>
