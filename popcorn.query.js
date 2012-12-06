@@ -16,7 +16,7 @@
     }
 
     var genericTypeKeys = {};
-    var genericIgnoreKeys = [ "start", "end" ];
+    var genericIgnoreKeys = options.ignore || [ "start", "end" ];
 
     function generateTypeKeys( types, specificTypeKeys, ignoreKeys ) {
       var typeKeys = {};
@@ -28,7 +28,7 @@
       types.forEach( function( typeKey ) {
         var manifestKeys = specificTypeKeys[ typeKey ] || Object.keys( Popcorn.manifest[ typeKey ].options );
         typeKeys[ typeKey ] = manifestKeys.filter( function( manifestKey ) {
-          return ignoreKeys.indexOf( manifestKey ) === -1;
+          return ignoreKeys ? ignoreKeys.indexOf( manifestKey ) === -1 : true;
         });
       });
 
@@ -54,8 +54,13 @@
           if ( keys ) {
             for ( var i = 0, l = keys.length; i < l; ++i ) {
               value = trackEvent[ keys[ i ] ];
-              if ( value && value.search( queryRegex ) > -1 ) {
-                return trackEvent;
+
+              if ( value ) {
+                value = typeof value === "string" ? value : value.toString();
+
+                if ( value.search( queryRegex ) > -1 ) {
+                  return trackEvent;
+                }
               }
             }
           }
@@ -64,7 +69,7 @@
       });
     }
 
-    genericTypeKeys = generateTypeKeys( null, null, genericIgnoreKeys );
+    genericTypeKeys = generateTypeKeys( options.types, options.typeOptions, genericIgnoreKeys );
 
     if ( initialQuery ) {
       return exec( initialQuery );
